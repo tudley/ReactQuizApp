@@ -20,23 +20,28 @@ function App() {
   // empty question object
   const questionObject : QuestionObject = {
     text : "questionText",
+    hasBeenChecked : false,
     answers : [
         {
           text : "answer1",
-          isCorrect : false
+          isCorrect : false,
+          isSelected : false,
         },
         {
           text : "answer2",
-          isCorrect : false
+          isCorrect : false,
+          isSelected : false,
         },
         {
           text : "answer3",
-          isCorrect : false
+          isCorrect : false,
+          isSelected : false,
         },
 
         {
           text : "answer4",
-          isCorrect : false
+          isCorrect : false,
+          isSelected : false,
         },
     ]
   }
@@ -44,12 +49,14 @@ function App() {
   // States
   // flag to determine if the user is building questions, or taking the quiz
   const [isBuilding, setIsBuilding] = useState(true)
+  // flag to determine whether the quiz is over and overview should display
+  const [isFinished, setIsFinished] = useState(false)
   // store the currentQuestion index here, and display it to the user
   const [questionIndex, setQuestionIndex] = useState(0)
   // track the array of question objects
   const [questions, setQuestions] = useState([questionObject])
   // track the users score
-  const [score, setScore] = useState([])
+  const [score, setScore] = useState(0)
 
   // calls setCurrentQuestion if valid
   const incrementQuestion = (direction : boolean) => {
@@ -67,6 +74,11 @@ function App() {
       setQuestions(prev =>[...prev, questionObject])
     }
     incrementQuestion(true)
+  }
+
+  const startQuiz = () => {
+    setQuestionIndex(0)
+    setIsBuilding(false)
   }
 
   const setAnswerToCorrect = (questionIndex : number, answerIndex : number) => {
@@ -88,7 +100,7 @@ function App() {
     console.log('current question answers isCorrect attributes: ', questions[questionIndex]?.answers[answerIndex].isCorrect)
   }
 
-  const setAnswerText = (questionIndex, answerIndex, text) => {
+  const setAnswerText = (questionIndex : number, answerIndex : number, text : string) => {
     setQuestions(prev =>
       prev.map((q, qi) => 
         qi === questionIndex
@@ -114,8 +126,42 @@ function App() {
   )
   }
 
-  const selectAnswer = (answer) => {
+  const selectAnswer = (questionIndex : number, answerIndex : number) => {
+    console.log(`setting question ${questionIndex} answer ${answerIndex} to true`)
+    setQuestions(prev =>
+      prev.map((q, qi) => 
+      qi === questionIndex ? {
+        ...q,
+        answers : q.answers.map((a, ai) => 
+        ({...a, isSelected : ai === answerIndex})
+        )
+      } : q)
+    )
 
+  }
+
+  const checkAnswer = (questionIndex : number) => {
+
+    if (questions[questionIndex].hasBeenChecked === true) return
+    
+    setQuestions(prev => 
+      prev.map((q, qi) => 
+      qi === questionIndex ? 
+      {...q, hasBeenChecked : true}
+      : q)
+    )
+    // check if for the current question, the selected answer is also the correct one.
+    const selectedAnswer = questions[questionIndex].answers.find(answer => answer.isSelected === true) 
+    if (selectedAnswer?.isCorrect) setScore(prev => prev + 1)
+ 
+  }
+
+  if (isFinished) {
+    return (
+      <>
+      Quiz is over, thanks for playing, you got {score} out of {questions.length}
+      </>
+    )
   }
     
 
@@ -128,9 +174,9 @@ function App() {
       
       {
       // Quiz mode
-      !isBuilding && <QuestionViewer questions={questions} questionIndex={questionIndex} />}
+      !isBuilding && <QuestionViewer questions={questions} questionIndex={questionIndex} selectAnswer={selectAnswer} />}
       
-      <NavBar questionIndex={questionIndex} questions={questions} addQuestion={addQuestion} incrementQuestion={incrementQuestion} startQuiz={() => setIsBuilding(false)}/>
+      <NavBar isBuilding={isBuilding} questionIndex={questionIndex} questions={questions} addQuestion={addQuestion} incrementQuestion={incrementQuestion} startQuiz={startQuiz} checkAnswer={checkAnswer} endQuiz={() => setIsFinished(true)}/>
     </>
   )
 }

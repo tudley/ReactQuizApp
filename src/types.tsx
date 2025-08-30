@@ -1,9 +1,11 @@
 export interface QuestionObject {
-    text : string,
-    answers : AnswerObject[]
+    text : string;
+    hasBeenChecked : boolean;
+    answers : AnswerObject[];
 }
 
 export interface AnswerObject {
-    text : string,
-    isCorrect : boolean
+    text : string;
+    isCorrect : boolean;
+    isSelected : boolean;
 }

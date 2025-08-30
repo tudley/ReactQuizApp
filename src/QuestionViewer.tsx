@@ -1,22 +1,25 @@
 import { Typography } from "@mui/material"
+import React from "react";
 import type { QuestionObject } from "./types"
+import AnswerViewer  from "./AnswerViewer";
 
 interface QuestionViewerProps {
-    question : QuestionObject;
+    questions : QuestionObject [];
     questionIndex : number;
-    selectAnswer : () => void;
+    selectAnswer : (questionIndex : number, answerIndex : number) => void;
 
 }
 
 
-const QuestionViewer = ({ question, selectAnswer}) : QuestionViewerProps => {
+const QuestionViewer : React.FC<QuestionViewerProps> = ({ questions, questionIndex, selectAnswer}) => {
 
+    const question = questions[questionIndex]
 
     return (
     <>
         This is a Question
         <Typography>{question.text}</Typography>
-        {question.answers.map((answer) => <AnswerViewer answer={answer} selectAnswer={selectAnswer}/>)}
+        {question.answers.map((answer, index) => <AnswerViewer answer={answer} questions={questions} selectAnswer={selectAnswer} questionIndex={questionIndex} answerIndex={index} />)}
     </>
     )
 }
