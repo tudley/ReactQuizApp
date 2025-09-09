@@ -1,6 +1,6 @@
 
 import { Paper, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 import AnswerBuilder from "./AnswerBuilder";
 import type { QuestionObject } from "./types";
 
@@ -15,14 +15,14 @@ interface QuestionBuilderProps  {
     setQuestionText : (questionIndex : number, text : string) => void;
 }
 
-const QuestionBuilder = ({ 
+const QuestionBuilder : React.FC<QuestionBuilderProps> = ({ 
     questionIndex, 
     question,
     questions, 
     setAnswerToCorrect, 
     setAnswerText,
     setQuestionText
-} : QuestionBuilderProps) => {
+}) => {
 
     // initial values
 

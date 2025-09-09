@@ -1,5 +1,5 @@
 import { Button, Paper, TextField } from "@mui/material"
-import { useState } from "react"
+import React, { useState } from "react"
 import type { AnswerObject } from "./types";
 
 interface AnswerBuilderProps {
@@ -10,12 +10,12 @@ interface AnswerBuilderProps {
     setAnswerText : (questionIndex : number, answerIndex : number, text : string) => void;
 }
 
-const AnswerBuilder = ({ 
+const AnswerBuilder : React.FC<AnswerBuilderProps> = ({ 
     questionIndex, 
     answer, 
     answerIndex, 
     setAnswerToCorrect, 
-    setAnswerText} : AnswerBuilderProps) => {
+    setAnswerText}) => {
 
     return(
         <Paper>
