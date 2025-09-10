@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import './App.css'
 import QuestionBuilder from './QuestionBuilder'
 import QuestionViewer from './QuestionViewer'
 import NavBar from './NavBar'
-import type { QuestionObject } from './types'
+import type { ErrorObject, QuestionObject } from './types'
+import { Alert } from '@mui/material'
 
 function App() {
   
@@ -51,6 +52,8 @@ function App() {
   const [isBuilding, setIsBuilding] = useState(true)
   // flag to determine whether the quiz is over and overview should display
   const [isFinished, setIsFinished] = useState(false)
+  // state to hold any error messages
+  const [error, setError] = useState<ErrorObject>({})
   // store the currentQuestion index here, and display it to the user
   const [questionIndex, setQuestionIndex] = useState(0)
   // track the array of question objects
@@ -58,13 +61,26 @@ function App() {
   // track the users score
   const [score, setScore] = useState(0)
 
+  const atLeastOneAnswerIsCorrect = (questionIndex : number) => {
+    if (!questions[questionIndex].answers.find(answer => answer.isCorrect===true)){
+      setError({severity : "alert", text : "One answer must be set to correct before moving on."})
+      return false
+    }
+    else return true
+  }
+
   // calls setCurrentQuestion if valid
   const incrementQuestion = (direction : boolean) => {
     if (direction === true) {
-      if (questionIndex < questions.length) setQuestionIndex(prev => prev + 1)   
-      }
+      if (questionIndex < questions.length) {
+        if (atLeastOneAnswerIsCorrect(questionIndex))
+        setQuestionIndex(prev => prev + 1)   
+      }}
     else {
-      if (questionIndex > 0) setQuestionIndex(prev => prev - 1)  
+      if (questionIndex > 0) {
+        if (atLeastOneAnswerIsCorrect(questionIndex))
+        setQuestionIndex(prev => prev - 1)  
+      }
     }
   }
 
@@ -156,6 +172,8 @@ function App() {
  
   }
 
+
+
   if (isFinished) {
     return (
       <>
@@ -168,6 +186,11 @@ function App() {
 
   return (
     <>
+      {error && 
+      <Alert severity={error.severity}>
+        {error.text}  
+      </Alert>}
+     
       {
       // Building mode
       isBuilding && <QuestionBuilder questionIndex={questionIndex} question={questions[questionIndex]} questions={questions} setAnswerToCorrect={setAnswerToCorrect} setAnswerText={setAnswerText} setQuestionText={setQuestionText}/>}

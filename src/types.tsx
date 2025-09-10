@@ -9,3 +9,8 @@ export interface AnswerObject {
     isCorrect : boolean;
     isSelected : boolean;
 }
+
+export interface ErrorObject {
+    severity ?: string;
+    text ?: string;
+}
